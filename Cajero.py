@@ -14,47 +14,28 @@ import numbers
 #     pass
 #   def retirar(self, monto)->bool:
 #     pass
-class MontoNoEsNumeroPositivo(Exception):
+class MONTO_NO_NUMERICO(Exception):
   pass
-
-
-class NoHayCuentaSeleccionada(Exception):
+class MONTO_NEGATIVO(Exception):
   pass
-
-
-class CajeroSinFondosSuficientes(Exception):
+class CUENTA_ERRONEA(Exception):
   pass
-
-
-class ExedeElLimiteDeRetiroDiario(Exception):
+class CAJERO_SIN_FONDO(Exception):
   pass
-
-
-class ExedeElLimiteDeDepositoDiario(Exception):
+class LIMITE_DE_RETIRO_DIARIO_EXCEDIDO(Exception):
   pass
-
-
-class NoAlcanzaAlMinimoDeDepositoDiario(Exception):
+class LIMITE_DE_DEPOSITO_DIARIO_EXCEDIDO(Exception):
   pass
-
-
-class NoAlcanzaAlMinimoDeRetiroDiario(Exception):
+class ERROR_MINIMO_DE_DEPOSITO(Exception):
+  pass
+class ERROR_MINIMO_DE_RETIRO(Exception):
   pass
 
 
 def isNumber(num):
   return isinstance(5, numbers.Number)
 
-
-def isPositiveNumber(num):
-  if isNumber(num):
-    return num > 0
-  return False
-
-
 class Cajero:
-  intentos_contraseña = 3
-  db_json_filename = 'datos.json'
   max_retiro_diario = 3000
   min_retiro_diario = 0
   max_deposito_diario = 3000
@@ -62,26 +43,33 @@ class Cajero:
   saldoCaja = 10000
 
   def __init__(self, cuenta: Cuenta):
+    if isinstance(cuenta, Cuenta) or cuenta is None:
+      raise CUENTA_ERRONEA()
+      
     self.cuenta: Cuenta = cuenta
 
   def get_cuenta(self) -> Cuenta:
     return self.cuenta
 
-  def depositar(self, monto) -> bool:
-    if isPositiveNumber(monto):
-      return False
-      raise MontoNoEsNumeroPositivo()
-
+  def depositar(self, monto):
+    if isNumber(monto):
+      raise MONTO_NO_NUMERICO()
+      if monto < 0:
+        raise MONTO_NEGATIVO()
+          if monto < min_retiro_diario:
+            raise ERROR_MINIMO_DE_DEPOSITO
+    
     self.cuenta.incrementar_saldo(monto)
-    return True
 
   def retirar(self, monto):
-    if isPositiveNumber(monto):
-      return False
-      raise MontoNoEsNumeroPositivo()
+    if isNumber(monto):
+      raise MONTO_NO_NUMERICO()
+      if monto < 0:
+        raise MONTO_NEGATIVO()
+          if monto < min_retiro_diario:
+            raise ERROR_MINIMO_DE_DEPOSITO
 
     self.cuentaSeleccionada.decrementar_saldo(monto)
-    return True
 
 
 # class CajeroVerificado(Cajeroo):
